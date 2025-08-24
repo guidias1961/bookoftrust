@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Book of Trust — PulseChain Influencers</title>
+<link rel="preconnect" href="https://unavatar.io"/>
+<meta name="description" content="Book of Trust — a realistic 3D, page-turning book of PulseChain influencers and ecosystem history.">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page-bg: #f8f6f0;
+    --page-shadow: rgba(0,0,0,0.15);
+    --text-dark: #2c3e50;
+    --text-light: #5a6c7d;
+    --accent: #e74c3c;
+    --gold: #d4af37;
+    --spine: linear-gradient(90deg, #8b4513, #a0522d, #cd853f);
+    --paper-texture: repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.015) 1px, rgba(0,0,0,0.015) 2px);
+    --book-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    /* Largura da lombada mais espessa e responsiva */
+    --spine-w: clamp(34px, 6vw, 48px);
+  }
+
+  * { box-sizing: border-box; }
+  
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: 
+      radial-gradient(ellipse at center, #f0f0f0 0%, #d9d9d9 100%),
+      repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
+    overflow-x: hidden;
+    color: var(--text-dark);
+  }
+
+  /* Header */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(248, 246, 240, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--gold);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  }
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: conic-gradient(var(--accent), var(--gold), var(--accent));
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+  }
+
+  .logo h1 {
+    margin: 0;
+    font-family: 'Crimson Text', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-box, .sort-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .search-box input, .sort-box select {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    color: var(--text-dark);
+  }
+
+  .btn {
+    background: linear-gradient(135deg, var(--accent), #c0392b);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4); }
+  .btn:active { transform: translateY(0); }
+
+  .link-btn {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid var(--gold);
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .link-btn:hover { background: var(--gold); color: white; transform: translateY(-2px); }
+
+  /* Main Book Stage */
+  .stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* reservar espaço para navegação fixa no rodapé em telas pequenas */
+    min-height: calc(100svh - 120px);
+    padding: 32px 12px 140px;
+    perspective: 2000px;
+  }
+
+  .book-container {
+    position: relative;
+    /* manter margens laterais seguras e nunca ultrapassar a viewport */
+    width: min(900px, 96vw);
+    /* reservar espaço da lombada dentro do container para não cortar */
+    padding-left: var(--spine-w);
+    /* altura compatível com viewport móvel para não cortar no topo/rodapé */
+    height: clamp(420px, 65svh, 680px);
+    transform-style: preserve-3d;
+  }
+
+  .book {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(-5deg) rotateY(5deg);
+    filter: drop-shadow(var(--book-shadow));
+  }
+
+  /* Book Spine (agora dentro do container, sem deslocamento negativo) */
+  .spine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--spine-w);
+    height: 100%;
+    background: var(--spine);
+    border-radius: 4px 0 0 4px;
+    transform-origin: right center;
+    box-shadow: 
+      inset -6px 0 12px rgba(0,0,0,0.35),
+      inset 0 0 0 1px rgba(255,255,255,0.12);
+  }
+
+  /* Texto da lombada por extenso */
+  .spine::after {
+    content: 'BOOK OF TRUST — PULSECHAIN INFLUENCERS';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* manter leitura vertical girando 90 graus */
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transform-origin: center;
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(9px, 1.8vw, 12px);
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+  }
+
+  /* Book Pages (deslocadas para a direita da lombada) */
+  .page {
+    position: absolute;
+    left: var(--spine-w);
+    width: calc(100% - var(--spine-w));
+    height: 100%;
+    background: 
+      var(--paper-texture),
+      linear-gradient(135deg, #fefefe 0%, #f8f6f0 100%);
+    border: 1px solid #e8e6e0;
+    border-radius: 0 8px 8px 0;
+    transform-origin: left center;
+    transform: rotateY(var(--rotation, 0deg));
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 
+      2px 0 10px rgba(0,0,0,0.1),
+      inset -1px 0 2px rgba(0,0,0,0.05);
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0,0,0,0.1), rgba(0,0,0,0.05), transparent);
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Page Content */
+  .page-content {
+    padding: clamp(16px, 3.8vw, 40px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Cover Page */
+  .cover-page {
+    background: 
+      linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #e74c3c 100%),
+      var(--paper-texture);
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cover-title {
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .cover-subtitle {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    opacity: 0.9;
+    margin-bottom: 40px;
+  }
+
+  .cover-ornament {
+    width: 120px;
+    height: 2px;
+    background: var(--gold);
+    margin: 20px auto;
+    position: relative;
+  }
+
+  .cover-ornament::before,
+  .cover-ornament::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    top: -3px;
+  }
+
+  .cover-ornament::before { left: -10px; }
+  .cover-ornament::after { right: -10px; }
+
+  /* Introduction Page */
+  .intro-page { font-family: 'Crimson Text', serif; line-height: 1.8; }
+  .intro-title { font-size: clamp(1.4rem, 5vw, 2.5rem); color: var(--accent); margin-bottom: 30px; text-align: center; font-weight: 600; }
+  .intro-text { font-size: clamp(0.95rem, 3.2vw, 1.1rem); color: var(--text-dark); margin-bottom: 25px; text-align: justify; }
+  .intro-highlight {
+    background: linear-gradient(120deg, transparent 0%, rgba(231, 76, 60, 0.1) 50%, transparent 100%);
+    padding: 20px;
+    border-left: 4px solid var(--accent);
+    margin: 25px 0;
+    font-style: italic;
+  }
+
+  /* Profile Pages */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(14px, 3vw, 30px);
+    height: 100%;
+  }
+
+  .profile-left { display: flex; flex-direction: column; gap: 20px; }
+  .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+
+  .avatar {
+    width: clamp(56px, 8vw, 70px);
+    height: clamp(56px, 8vw, 70px);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    border: 2px solid var(--gold);
+    flex: 0 0 auto;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .profile-info h2 { margin: 0 0 5px 0; font-size: clamp(1.1rem, 3.8vw, 1.5rem); color: var(--text-dark); font-weight: 600; }
+  .profile-handle { color: var(--text-light); font-size: clamp(0.9rem, 3vw, 1rem); margin: 0; }
+
+  .profile-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { background: linear-gradient(135deg, var(--accent), #c0392b); color: white; padding: 4px 12px; border-radius: 16px; font-size: 0.8rem; font-weight: 500; }
+
+  .score-section { background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); }
+  .score-title { font-size: 0.9rem; color: var(--text-light); margin: 0 0 10px 0; font-weight: 500; }
+  .score-bar { width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; }
+  .score-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #f1c40f); border-radius: 4px; transition: width 1s ease-out; }
+
+  .profile-about { font-family: 'Crimson Text', serif; font-size: 1rem; line-height: 1.6; color: var(--text-dark); text-align: justify; }
+
+  .profile-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: transform 0.2s;
+  }
+  .profile-link:hover { transform: translateY(-2px); }
+
+  .profile-right {
+    background: rgba(0,0,0,0.02);
+    border-radius: 8px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    align-content: start;
+  }
+
+  .fact-item {
+    padding: 15px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 3px solid var(--accent);
+  }
+  .fact-label { font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 5px 0; font-weight: 500; }
+  .fact-value { font-size: 1rem; color: var(--text-dark); margin: 0; font-weight: 600; }
+
+  /* Navigation */
+  .navigation {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(248, 246, 240, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 18px;
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    z-index: 50;
+    max-width: calc(100vw - 24px);
+  }
+
+  .nav-btn {
+    background: linear-gradient(135deg, var(--accent), #c0392b);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: transform 0.2s;
+    min-width: 96px;
+  }
+  .nav-btn:hover { transform: scale(1.05); }
+  .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .page-indicator { color: var(--text-dark); font-weight: 500; padding: 0 8px; font-size: 1rem; }
+
+  /* Responsive Design */
+  @media (max-width: 900px) {
+    .header-content { flex-direction: column; text-align: center; }
+  }
+
+  @media (max-width: 768px) {
+    .book { transform: rotateX(-3deg) rotateY(2deg); }
+    .profile-grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+
+  @media (max-width: 480px) {
+    /* remover inclinação para não extrapolar largura em telas muito pequenas */
+    .book { transform: none; }
+    .book-container { height: clamp(380px, 58svh, 620px); }
+    .page::before { right: -6px; width: 6px; }
+    .profile-header { flex-direction: column; text-align: center; }
+    .navigation { gap: 12px; padding: 10px 14px; }
+    .nav-btn { padding: 8px 14px; min-width: 80px; }
+    .page-indicator { font-size: 0.95rem; }
+  }
+
+  /* Loading State */
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 1.2rem;
+    color: var(--text-light);
+  }
+</style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <h1>Book of Trust</h1>
+      </div>
+      <div class="controls">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.2-4.2"></path>
+          </svg>
+          <input type="text" id="search" placeholder="Search profiles...">
+        </div>
+        <div class="sort-box">
+          <label for="sort">Sort:</label>
+          <select id="sort">
+            <option value="score">Score (High → Low)</option>
+            <option value="name">Name (A → Z)</option>
+            <option value="category">Category</option>
+          </select>
+        </div>
+        <button class="btn" id="shuffle">Shuffle</button>
+        <a href="https://x.com/search?q=PulseChain" class="link-btn" target="_blank" rel="noopener">Twitter</a>
+        <a href="#" class="link-btn" target="_blank">Buy PLS</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="book-container">
+      <div class="book">
+        <div class="spine"></div>
+        <div id="pages-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="navigation">
+    <button class="nav-btn" id="prev-btn">← Previous</button>
+    <div class="page-indicator">
+      <span id="current-page">1</span> / <span id="total-pages">0</span>
+    </div>
+    <button class="nav-btn" id="next-btn">Next →</button>
+  </div>
+
+  <!-- Profile Data (ATUALIZADO +30 perfis) -->
+  <script type="application/json" id="profile-data">
+  [
+    {"handle":"PulseChainCom","name":"PulseChain","url":"https://x.com/PulseChainCom","category":"Official","score":99,"about":"Official account for the PulseChain network."},
+    {"handle":"PulseXcom","name":"PulseX","url":"https://x.com/PulseXcom","category":"Official","score":97,"about":"Official account for PulseX DEX on PulseChain."},
+    {"handle":"RichardHeartWin","name":"Richard Heart","url":"https://x.com/RichardHeartWin","category":"Founder","score":98,"about":"Founder behind HEX, PulseChain and PulseX."},
+    {"handle":"LibertySwapFi","name":"Liberty Swap","url":"https://x.com/LibertySwapFi","category":"Bridge","score":86,"about":"Cross-chain bridge focused on PulseChain with direct buy features."},
+
+    {"handle":"howtopulse","name":"HowToPulse","url":"https://x.com/howtopulse","category":"News","score":90,"about":"News and guides for PulseChain, PulseX and HEX."},
+    {"handle":"gopulsechain","name":"GoPulse Chain","url":"https://x.com/gopulsechain","category":"Analytics","score":85,"about":"Community analytics for the PulseChain ecosystem."},
+    {"handle":"GoPulsecom","name":"GoPulse Suite","url":"https://x.com/GoPulsecom","category":"Analytics","score":84,"about":"Explorers and analytics tools for developers and users."},
+    {"handle":"Pulse_ChainNews","name":"PulseChain News","url":"https://x.com/Pulse_ChainNews","category":"News","score":83,"about":"Curated updates and community roundups."},
+    {"handle":"PulseChainLIVE","name":"PulseChain LIVE","url":"https://x.com/PulseChainLIVE","category":"Community","score":80,"about":"Live discussions and ecosystem coverage."},
+    {"handle":"FreePulseio","name":"FreePulse","url":"https://x.com/FreePulseio","category":"Onboarding","score":82,"about":"Onboarding faucet and education for newcomers."},
+    {"handle":"liquidloansio","name":"Liquid Loans","url":"https://x.com/liquidloansio","category":"DeFi","score":88,"about":"Lending protocol using PLS as collateral."},
+    {"handle":"POWERCITYio","name":"POWERCITY","url":"https://x.com/POWERCITYio","category":"Infrastructure","score":88,"about":"Infrastructure and cross-chain swap aggregator PortalX."},
+    {"handle":"InternetMoneyio","name":"Internet Money","url":"https://x.com/InternetMoneyio","category":"Wallet","score":82,"about":"Wallet focused on PulseChain features."},
+    {"handle":"PHUXGiven","name":"PHUX","url":"https://x.com/PHUXGiven","category":"DEX","score":84,"about":"Community-governed DEX on PulseChain."},
+    {"handle":"K4KCrypto","name":"K4K Crypto","url":"https://x.com/K4KCrypto","category":"Creator","score":87,"about":"Education and deep-dives on PulseChain/HEX."},
+    {"handle":"CryptoCoffee369","name":"Crypto Coffee","url":"https://x.com/CryptoCoffee369","category":"Creator","score":83,"about":"Tutorials and technical content for users."},
+    {"handle":"Hexologist31","name":"The Hexologist","url":"https://x.com/Hexologist31","category":"Creator","score":82,"about":"Streaming and news across HEX and PulseChain."},
+    {"handle":"AxisAlive","name":"AXiS ALiVE","url":"https://x.com/AxisAlive","category":"Analyst","score":81,"about":"Technical analysis and tools for PulseChain."},
+    {"handle":"hexcrypto","name":"HEX","url":"https://x.com/hexcrypto","category":"Protocol","score":86,"about":"Official HEX protocol account."},
+    {"handle":"PortalXSwap","name":"PortalX Swap","url":"https://x.com/PortalXSwap","category":"Bridge","score":86,"about":"Cross-chain swap aggregator to/from PulseChain."},
+    {"handle":"piteasio","name":"Piteas","url":"https://x.com/piteasio","category":"Aggregator","score":82,"about":"DEX aggregator for optimal routing on PulseChain."},{"handle":"PulseChainDaily","name":"PulseChain Daily","url":"https://x.com/PulseChainDaily","category":"News","score":82,"about":"Daily news/events covering the PulseChain ecosystem."},
+    {"handle":"ThePulseWallet","name":"Pulse Wallet","url":"https://x.com/ThePulseWallet","category":"Wallet","score":86,"about":"MPC wallet with PLS staking and portfolio tools."},
+    {"handle":"PulseDomains_","name":"Pulse Domains (PNS)","url":"https://x.com/PulseDomains_","category":"Name Service","score":84,"about":".pls domains for PulseChain; alerts via @PNSnameBot."},
+    {"handle":"PulseCoinList","name":"PulseCoinList","url":"https://x.com/PulseCoinList","category":"Analytics","score":80,"about":"Ecosystem tracker and token listings for PulseChain."},
+    {"handle":"PunksOnPulse","name":"Punks On Pulse","url":"https://x.com/PunksOnPulse","category":"NFT","score":78,"about":"Punks collection forked/issued on PulseChain."},
+    {"handle":"ThePulsicans","name":"The Pulsicans","url":"https://x.com/ThePulsicans","category":"NFT","score":76,"about":"Community NFT project on PulseChain."},
+    {"handle":"PulseMarket_NFT","name":"PulseMarket","url":"https://x.com/PulseMarket_NFT","category":"NFT","score":77,"about":"NFT marketplace/community focused on PulseChain."},
+    {"handle":"Pulsefinity","name":"Pulsefinity","url":"https://x.com/Pulsefinity","category":"Launchpad","score":79,"about":"Launchpad/community hub for PulseChain projects."},
+    {"handle":"0xCoast","name":"Coast","url":"https://x.com/0xCoast","category":"On-Ramp","score":84,"about":"Fiat on-ramp/off-ramp tailored for PulseChain."},
+    {"handle":"PulseChain1","name":"PulseChain (Community)","url":"https://x.com/PulseChain1","category":"Community","score":78,"about":"Community account posting PulseChain updates."},
+    {"handle":"phiatcrypto","name":"PHIAT","url":"https://x.com/phiatcrypto","category":"DeFi","score":78,"about":"Collateralized lending/borrowing in the ecosystem."},
+    {"handle":"Phattywallet","name":"Phatty Wallet","url":"https://x.com/Phattywallet","category":"Wallet","score":76,"about":"Wallet project with PulseChain support."},
+    {"handle":"Phamouscrypto","name":"PHAMOUS","url":"https://x.com/Phamouscrypto","category":"DeFi","score":76,"about":"Yield/points style protocol on PulseChain."},
+    {"handle":"PulseChainPrice","name":"PulseChain Price","url":"https://x.com/PulseChainPrice","category":"Analytics","score":78,"about":"Price feeds and charts for PLS/PLSX/HEX."},
+    {"handle":"TetraWin","name":"Tetra Win","url":"https://x.com/TetraWin","category":"DeFi","score":75,"about":"Gameified staking/lottery mechanics on PulseChain."},
+    {"handle":"winwindefi","name":"WinWin DeFi","url":"https://x.com/winwindefi","category":"DeFi","score":75,"about":"Prize-savings/lottery style DeFi built for PulseChain."},
+    {"handle":"texan_token","name":"TEXAN Token","url":"https://x.com/texan_token","category":"Token","score":74,"about":"Community token active on PulseChain."},
+    {"handle":"WhaleHex","name":"Whale HEX","url":"https://x.com/WhaleHex","category":"Analyst","score":77,"about":"Charts and on-chain commentary for HEX/PulseChain."},
+    {"handle":"HedronCrypto","name":"Hedron","url":"https://x.com/HedronCrypto","category":"Protocol","score":80,"about":"HEX-adjacent protocol; stakes tokenization tooling."},
+    {"handle":"IcosaCrypto","name":"Icosa","url":"https://x.com/IcosaCrypto","category":"Protocol","score":80,"about":"Protocol linked to Hedron/HEX staking mechanics."},
+    {"handle":"pulsetoolsfnce","name":"PulseTools","url":"https://x.com/pulsetoolsfnce","category":"Tools","score":76,"about":"Portfolio and analytics utilities for PulseChain."},
+    {"handle":"maximus_dao","name":"Maximus DAO","url":"https://x.com/maximus_dao","category":"Protocol","score":77,"about":"HEX derivative staking pools/community."},
+    {"handle":"plsfolio","name":"PLSFolio","url":"https://x.com/plsfolio","category":"Analytics","score":78,"about":"Portfolio/price tracker for PulseChain assets."},
+    {"handle":"pulsechainiou","name":"PulseChain IOU","url":"https://x.com/pulsechainiou","category":"Community","score":73,"about":"Community account that tracked early IOU markets."},
+    {"handle":"PNSnameBot","name":"PNS Registry Bot","url":"https://x.com/PNSnameBot","category":"Name Service","score":72,"about":"Bot posting .pls domain registrations for PNS."},
+    {"handle":"PulseLN","name":"PulseLN","url":"https://x.com/PulseLN","category":"On-Ramp","score":78,"about":"Lightning/fiat on-/off-ramp and quick swaps to PLS."},
+    {"handle":"JPulsepot","name":"PulsePot","url":"https://x.com/JPulsepot","category":"Gaming","score":73,"about":"Player-vs-player on-chain games on PulseChain."},
+    {"handle":"GasspasPLS","name":"Gasspas","url":"https://x.com/GasspasPLS","category":"Bridge","score":72,"about":"Gasless bridge to PulseChain via LibertySwap."},
+    {"handle":"pulsechainconf","name":"PulseChain Conference","url":"https://x.com/pulsechainconf","category":"Community","score":70,"about":"Community-run online conference for PulseChain."},
+    {"handle":"DOGE_on_Pulse","name":"DOGE on Pulse","url":"https://x.com/DOGE_on_Pulse","category":"Token","score":70,"about":"DOGE-themed token/community on PulseChain."}
+  ]
+  </script>
+
+  <script>
+    // Helper
+    const $ = id => document.getElementById(id);
+    
+    // Data
+    let profiles = [];
+    let filteredProfiles = [];
+    let currentPageIndex = 0; // 0 = cover, 1 = intro
+    
+    document.addEventListener('DOMContentLoaded', init);
+    
+    function init() {
+      loadProfiles();
+      setupEventListeners();
+      renderPages();
+    }
+    
+    function loadProfiles() {
+      try {
+        const dataScript = $('profile-data');
+        profiles = JSON.parse(dataScript.textContent);
+        filteredProfiles = [...profiles];
+      } catch (error) {
+        console.error('Error loading profiles:', error);
+        profiles = [];
+        filteredProfiles = [];
+      }
+    }
+    
+    function setupEventListeners() {
+      // Navigation
+      $('prev-btn').addEventListener('click', previousPage);
+      $('next-btn').addEventListener('click', nextPage);
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', handleKeydown);
+      
+      // Touch/swipe support
+      setupSwipeHandlers();
+      
+      // Search and sort
+      $('search').addEventListener('input', handleSearch);
+      $('search').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          jumpToFirstMatch();
+        }
+      });
+      $('sort').addEventListener('change', handleSort);
+      $('shuffle').addEventListener('click', handleShuffle);
+    }
+    
+    function handleKeydown(e) {
+      switch(e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          previousPage();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          nextPage();
+          break;
+      }
+    }
+    
+    function setupSwipeHandlers() {
+      let startX = 0;
+      let startY = 0;
+      
+      document.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }, { passive: true });
+      
+      document.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 0) previousPage(); else nextPage();
+        }
+      }, { passive: true });
+    }
+    
+    function handleSearch() {
+      const query = $('search').value.toLowerCase().trim();
+      
+      if (!query) {
+        filteredProfiles = [...profiles];
+      } else {
+        filteredProfiles = profiles.filter(p => 
+          p.name.toLowerCase().includes(query) ||
+          p.handle.toLowerCase().includes(query) ||
+          p.category.toLowerCase().includes(query) ||
+          p.about.toLowerCase().includes(query)
+        );
+      }
+      
+      currentPageIndex = 0;
+      setTimeout(() => {
+        renderPages();
+        if (query && filteredProfiles.length === 1) {
+          currentPageIndex = 2; // cover(0) + intro(1)
+          updatePagePositions();
+          updateNavigation(2 + filteredProfiles.length);
+        }
+      }, 50);
+    }
+
+    function jumpToFirstMatch() {
+      const query = $('search').value.toLowerCase().trim();
+      if (!query) return;
+      const idx = filteredProfiles.findIndex(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.handle.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query) ||
+        p.about.toLowerCase().includes(query)
+      );
+      if (idx >= 0) {
+        currentPageIndex = 2 + idx; // pular direto para a página do perfil
+        updatePagePositions();
+        updateNavigation(2 + filteredProfiles.length);
+      }
+    }
+    
+    function handleSort() {
+      const sortBy = $('sort').value;
+      
+      switch(sortBy) {
+        case 'score':
+          filteredProfiles.sort((a, b) => b.score - a.score);
+          break;
+        case 'name':
+          filteredProfiles.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'category':
+          filteredProfiles.sort((a, b) => {
+            if (a.category === b.category) return b.score - a.score;
+            return a.category.localeCompare(b.category);
+          });
+          break;
+      }
+      
+      currentPageIndex = 0;
+      setTimeout(() => { renderPages(); }, 10);
+    }
+    
+    function handleShuffle() {
+      for (let i = filteredProfiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredProfiles[i], filteredProfiles[j]] = [filteredProfiles[j], filteredProfiles[i]];
+      }
+      currentPageIndex = 0;
+      setTimeout(() => { renderPages(); }, 10);
+    }
+    
+    function renderPages() {
+      const container = $('pages-container');
+      container.innerHTML = '';
+      
+      const totalPages = 2 + filteredProfiles.length;
+      
+      container.appendChild(createCoverPage());
+      container.appendChild(createIntroPage());
+      
+      filteredProfiles.forEach((profile, index) => {
+        const profilePage = createProfilePage(profile, index + 3);
+        container.appendChild(profilePage);
+      });
+      
+      setTimeout(() => {
+        updatePagePositions();
+        updateNavigation(totalPages);
+        
+        // animar barras
+        setTimeout(() => {
+          const container = $('pages-container');
+          if (container) {
+            const scoreBars = container.querySelectorAll('.score-fill');
+            Array.from(scoreBars).forEach(bar => {
+              const width = bar.style.width;
+              bar.style.width = '0%';
+              setTimeout(() => { bar.style.width = width; }, 100);
+            });
+          }
+        }, 400);
+      }, 60);
+    }
+    
+    function createCoverPage() {
+      const page = document.createElement('div');
+      page.className = 'page';
+      page.innerHTML = `
+        <div class="page-content cover-page">
+          <h1 class="cover-title">Book of Trust</h1>
+          <div class="cover-ornament"></div>
+          <p class="cover-subtitle">A Comprehensive Guide to<br>PulseChain Influencers & Ecosystem</p>
+          <div class="cover-ornament"></div>
+          <p style="margin-top: 40px; opacity: 0.8; font-size: 1rem;">
+            Documenting the voices that shape<br>the world's most ambitious blockchain
+          </p>
+        </div>
+      `;
+      return page;
+    }
+    
+    function createIntroPage() {
+      const page = document.createElement('div');
+      page.className = 'page';
+      page.innerHTML = `
+        <div class="page-content intro-page">
+          <h2 class="intro-title">The PulseChain Story</h2>
+          <p class="intro-text">PulseChain is a fork of Ethereum focused on lower fees and efficiency. This book catalogs builders, creators and tools around that ecosystem.</p>
+          <div class="intro-highlight">"PulseChain increases the value of HEX, decreases fees for HEX users, and gives HEX users free HEX on launch." – Richard Heart</div>
+          <p class="intro-text">The launch duplicated Ethereum balances on PulseChain and sparked a wave of tooling, content, and community projects. This book highlights notable accounts and resources used by the community.</p>
+        </div>
+      `;
+      return page;
+    }
+    
+    function createProfilePage(profile, pageNumber) {
+      const page = document.createElement('div');
+      page.className = 'page';
+      const avatarSrc = getAvatarUrl(profile.handle);
+      const fallbackSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 70 70'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%235a6c7d' font-family='Inter,Arial' font-size='12'%3E@${encodeURIComponent(profile.handle)}%3C/text%3E%3C/svg%3E`;
+      page.innerHTML = `
+        <div class="page-content">
+          <div class="profile-grid">
+            <div class="profile-left">
+              <div class="profile-header">
+                <div class="avatar">
+                  <img src="${avatarSrc}"
+                       alt="${profile.name} avatar"
+                       referrerpolicy="no-referrer" decoding="async" loading="lazy"
+                       onerror="this.src='${fallbackSvg}'">
+                </div>
+                <div class="profile-info">
+                  <h2>${profile.name}</h2>
+                  <p class="profile-handle">@${profile.handle}</p>
+                </div>
+              </div>
+              
+              <div class="profile-tags">
+                <span class="tag">${profile.category}</span>
+                <span class="tag">Score: ${profile.score}</span>
+              </div>
+              
+              <div class="score-section">
+                <p class="score-title">Influence Score</p>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${profile.score}%"></div>
+                </div>
+              </div>
+              
+              <p class="profile-about">${profile.about}</p>
+              
+              <a href="${profile.url}" target="_blank" rel="noopener" class="profile-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
+                Visit Profile
+              </a>
+            </div>
+            
+            <div class="profile-right">
+              <div class="fact-item">
+                <p class="fact-label">Category</p>
+                <p class="fact-value">${profile.category}</p>
+              </div>
+              <div class="fact-item">
+                <p class="fact-label">Handle</p>
+                <p class="fact-value">@${profile.handle}</p>
+              </div>
+              <div class="fact-item">
+                <p class="fact-label">Influence Score</p>
+                <p class="fact-value">${profile.score}/100</p>
+              </div>
+              <div class="fact-item">
+                <p class="fact-label">Score Rationale</p>
+                <p class="fact-value" style="font-size: 0.9rem; line-height: 1.4; font-weight: 400;">Editorial assessment based on public reach, content cadence and contribution as of ${new Date().toLocaleDateString()}.</p>
+              </div>
+              <div class="fact-item">
+                <p class="fact-label">Profile Link</p>
+                <p class="fact-value" style="font-size: 0.9rem; word-break: break-all;">
+                  <a href="${profile.url}" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">${profile.url.replace('https://', '')}</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      return page;
+    }
+    
+    // Avatar URL com fallback em cascata (sempre tenta pegar a foto atual do X)
+    function getAvatarUrl(handle) {
+      const h = encodeURIComponent(handle);
+      const fb3 = encodeURIComponent(`https://unavatar.io/${h}`);
+      const fb2 = encodeURIComponent(`https://unavatar.io/twitter/${h}?fallback=${fb3}`);
+      return `https://unavatar.io/x/${h}?fallback=${fb2}`;
+    }
+    
+    function updatePagePositions() {
+      const pages = document.querySelectorAll('.page');
+      pages.forEach((page, index) => {
+        const rotation = index < currentPageIndex ? -180 : 0;
+        page.style.setProperty('--rotation', `${rotation}deg`);
+        page.style.zIndex = pages.length - index;
+        if (index === currentPageIndex) {
+          page.style.transform = `rotateY(${rotation}deg) translateZ(2px)`;
+        } else {
+          page.style.transform = `rotateY(${rotation}deg)`;
+        }
+      });
+    }
+    
+    function updateNavigation(totalPages) {
+      $('current-page').textContent = currentPageIndex + 1;
+      $('total-pages').textContent = totalPages;
+      $('prev-btn').disabled = currentPageIndex === 0;
+      $('next-btn').disabled = currentPageIndex >= totalPages - 1;
+    }
+    
+    function nextPage() {
+      const totalPages = 2 + filteredProfiles.length;
+      if (currentPageIndex < totalPages - 1) {
+        currentPageIndex++;
+        updatePagePositions();
+        updateNavigation(totalPages);
+        setTimeout(() => {
+          const current = document.querySelectorAll('.page')[currentPageIndex];
+          if (current) {
+            const bar = current.querySelector('.score-fill');
+            if (bar) bar.style.width = bar.style.width;
+          }
+        }, 100);
+      }
+    }
+    
+    function previousPage() {
+      if (currentPageIndex > 0) {
+        currentPageIndex--;
+        updatePagePositions();
+        updateNavigation(2 + filteredProfiles.length);
+      }
+    }
+  </script>
+</body>
+</html>
+
