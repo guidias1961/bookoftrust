@@ -4,6 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Book of Trust — PulseChain Influencers</title>
+<link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+<link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+
 <link rel="preconnect" href="https://unavatar.io"/>
 <meta name="description" content="Book of Trust — a realistic 3D, page-turning book of PulseChain influencers and ecosystem history.">
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,7 +42,14 @@
     border-bottom: 2px solid var(--gold); box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
   .header-content { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
   .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { width: 40px; height: 40px; background: conic-gradient(var(--accent), var(--gold), var(--accent)); border-radius: 8px; box-shadow: 0 4px 15px rgba(231,76,60,0.3); }
+.logo-icon{
+  width: 40px;
+  height: 40px;
+  background: url('logo.png') center/contain no-repeat; /* usa o arquivo ao lado do index.html */
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(231,76,60,0.3);
+}
+
   .logo h1 { margin: 0; font-family: 'Crimson Text', serif; font-size: 24px; font-weight: 600; color: var(--text-dark); }
 
   .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
